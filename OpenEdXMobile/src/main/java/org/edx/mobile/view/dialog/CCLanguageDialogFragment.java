@@ -1,7 +1,6 @@
 package org.edx.mobile.view.dialog;
 
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -9,7 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.inject.Inject;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 
 import org.edx.mobile.R;
 import org.edx.mobile.core.IEdxEnvironment;
@@ -19,9 +19,9 @@ import org.edx.mobile.view.adapters.ClosedCaptionAdapter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import roboguice.fragment.RoboDialogFragment;
+import javax.inject.Inject;
 
-public class CCLanguageDialogFragment extends RoboDialogFragment {
+public class CCLanguageDialogFragment extends DialogFragment {
 
     private final Logger logger = new Logger(getClass().getName());
     private IListDialogCallback callback;

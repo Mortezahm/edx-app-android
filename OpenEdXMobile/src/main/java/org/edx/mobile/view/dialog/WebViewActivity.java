@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
 import android.webkit.WebResourceRequest;
@@ -14,11 +12,17 @@ import android.webkit.WebView;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.edx.mobile.R;
 import org.edx.mobile.base.BaseFragmentActivity;
 import org.edx.mobile.util.AppConstants;
 import org.edx.mobile.view.custom.URLInterceptorWebViewClient;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class WebViewActivity extends BaseFragmentActivity {
 
     private static final String ARG_URL = "url";
@@ -55,7 +59,7 @@ public class WebViewActivity extends BaseFragmentActivity {
 
         webView = (WebView) findViewById(R.id.webView);
         final URLInterceptorWebViewClient client =
-                new URLInterceptorWebViewClient(this, webView, false, null);
+                new URLInterceptorWebViewClient(this, config, webView, false, null);
         client.setPageStatusListener(new URLInterceptorWebViewClient.IPageStatusListener() {
 
             @Override
@@ -83,7 +87,8 @@ public class WebViewActivity extends BaseFragmentActivity {
 
             @Override
             public void onPageLoadProgressChanged(WebView view, int progressPercent) {
-                if (progressPercent > AppConstants.PAGE_LOAD_THRESHOLD) progress.setVisibility(View.GONE);
+                if (progressPercent > AppConstants.PAGE_LOAD_THRESHOLD)
+                    progress.setVisibility(View.GONE);
             }
         });
 

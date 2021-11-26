@@ -3,14 +3,13 @@ package org.edx.mobile.util;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
-import androidx.fragment.app.FragmentActivity;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.google.inject.Inject;
+import androidx.fragment.app.FragmentActivity;
 
 import org.edx.mobile.R;
-import org.edx.mobile.core.IEdxEnvironment;
+import org.edx.mobile.base.MainApplication;
 import org.edx.mobile.logger.Logger;
 import org.edx.mobile.module.analytics.AnalyticsRegistry;
 import org.edx.mobile.view.dialog.IDialogCallback;
@@ -24,9 +23,6 @@ public class BrowserUtil {
     private BrowserUtil() {
         throw new UnsupportedOperationException();
     }
-
-    @Inject
-    private static IEdxEnvironment environment;
 
     /**
      * Opens given URL in native browser.
@@ -46,7 +42,7 @@ public class BrowserUtil {
 
         if(url.startsWith("/")) {
             // use API host as the base URL for relative paths
-            String absoluteUrl = String.format("%s%s", environment.getConfig().getApiHostURL(), url);
+            String absoluteUrl = String.format("%s%s", MainApplication.getEnvironment(activity).getConfig().getApiHostURL(), url);
             logger.debug(String.format("opening relative path URL: %s", absoluteUrl));
             openInBrowser(activity, absoluteUrl, canTrackEvent);
             return;
@@ -54,10 +50,10 @@ public class BrowserUtil {
 
 
         // verify if the app is running on zero-rated mobile data?
-        if (NetworkUtil.isConnectedMobile(activity) && NetworkUtil.isOnZeroRatedNetwork(activity, environment.getConfig())) {
+        if (NetworkUtil.isConnectedMobile(activity) && NetworkUtil.isOnZeroRatedNetwork(activity, MainApplication.getEnvironment(activity).getConfig())) {
 
             // check if this URL is a white-listed URL, anything outside the white-list is EXTERNAL LINK
-            if (ConfigUtil.Companion.isWhiteListedURL(url, environment.getConfig())) {
+            if (ConfigUtil.Companion.isWhiteListedURL(url, MainApplication.getEnvironment(activity).getConfig())) {
                 // this is white-listed URL
                 logger.debug(String.format("opening white-listed URL: %s", url));
                 openInBrowser(activity, url, canTrackEvent);
@@ -94,7 +90,7 @@ public class BrowserUtil {
         try {
             context.startActivity(intent);
             if (canTrackEvent) {
-                AnalyticsRegistry analyticsRegistry = environment.getAnalyticsRegistry();
+                AnalyticsRegistry analyticsRegistry = MainApplication.getEnvironment(context).getAnalyticsRegistry();
                 analyticsRegistry.trackBrowserLaunched(url);
             }
         } catch (ActivityNotFoundException e) {

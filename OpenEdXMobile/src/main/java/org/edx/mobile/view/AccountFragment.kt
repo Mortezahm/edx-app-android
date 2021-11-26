@@ -9,7 +9,7 @@ import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
-import com.google.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 import de.greenrobot.event.EventBus
 import org.edx.mobile.BuildConfig
 import org.edx.mobile.R
@@ -33,22 +33,24 @@ import org.edx.mobile.view.dialog.IDialogCallback
 import org.edx.mobile.view.dialog.NetworkCheckDialogFragment
 import org.edx.mobile.view.dialog.VideoDownloadQualityDialogFragment
 import retrofit2.Call
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AccountFragment : BaseFragment() {
 
     private lateinit var binding: FragmentAccountBinding
 
     @Inject
-    private val config: Config? = null
+    lateinit var config: Config
 
     @Inject
-    private val environment: IEdxEnvironment? = null
+    lateinit var environment: IEdxEnvironment
 
     @Inject
-    private val loginPrefs: LoginPrefs? = null
+    lateinit var loginPrefs: LoginPrefs
 
     @Inject
-    private val userService: UserService? = null
+    lateinit var userService: UserService
 
     private var getAccountCall: Call<Account>? = null
 
@@ -63,7 +65,7 @@ class AccountFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        environment?.analyticsRegistry?.trackScreenView(Analytics.Screens.PROFILE)
+        environment.analyticsRegistry?.trackScreenView(Analytics.Screens.PROFILE)
         EventBus.getDefault().register(this)
         sendGetUpdatedAccountCall()
     }
@@ -77,9 +79,9 @@ class AccountFragment : BaseFragment() {
     private fun handleIntentBundle(bundle: Bundle?) {
         if (bundle != null) {
             @ScreenDef val screenName = bundle.getString(Router.EXTRA_SCREEN_NAME)
-            val username = loginPrefs?.username
+            val username = loginPrefs.username
             if (!screenName.isNullOrBlank() && !username.isNullOrBlank() && screenName == Screen.USER_PROFILE) {
-                environment?.router?.showUserProfile(requireContext(), username)
+                environment.router?.showUserProfile(requireContext(), username)
             }
         }
     }
@@ -93,23 +95,24 @@ class AccountFragment : BaseFragment() {
         updateSDCardSwitch()
         initHelpFields()
 
-        binding.containerPurchases.visibility = if (environment?.config?.isIAPEnabled == true) View.VISIBLE else View.GONE
+        binding.containerPurchases.visibility = if (environment.config?.isIAPEnabled == true) View.VISIBLE else View.GONE
 
-        if (!loginPrefs?.username.isNullOrBlank()) {
+        if (!loginPrefs.username.isNullOrBlank()) {
             binding.btnSignOut.visibility = View.VISIBLE
             binding.btnSignOut.setOnClickListener {
-                environment?.router?.performManualLogout(context,
+                environment.router?.performManualLogout(context,
                         environment.analyticsRegistry, environment.notificationDelegate)
             }
         }
 
         binding.appVersion.text = String.format("%s %s %s", getString(R.string.label_app_version),
-                BuildConfig.VERSION_NAME, config?.environmentDisplayName)
+                BuildConfig.VERSION_NAME, config.environmentDisplayName
+        )
 
-        config?.deleteAccountUrl?.let { deleteAccountUrl ->
+        config.deleteAccountUrl?.let { deleteAccountUrl ->
             binding.containerDeleteAccount.visibility = View.VISIBLE
             binding.btnDeleteAccount.setOnClickListener {
-                environment?.router?.showAuthenticatedWebViewActivity(
+                environment.router?.showAuthenticatedWebViewActivity(
                     this.requireContext(),
                     deleteAccountUrl, getString(R.string.title_delete_my_account), false
                 )
@@ -120,18 +123,18 @@ class AccountFragment : BaseFragment() {
             }
         }
 
-        environment?.analyticsRegistry?.trackScreenViewEvent(Analytics.Events.PROFILE_PAGE_VIEWED, Analytics.Screens.PROFILE)
+        environment.analyticsRegistry?.trackScreenViewEvent(Analytics.Events.PROFILE_PAGE_VIEWED, Analytics.Screens.PROFILE)
     }
 
     private fun initVideoQuality() {
-        environment?.let { environment ->
+        environment.let { environment ->
             binding.containerVideoQuality.setOnClickListener {
                 val videoQualityDialog: VideoDownloadQualityDialogFragment = VideoDownloadQualityDialogFragment.getInstance(environment,
-                        callback = object : VideoDownloadQualityDialogFragment.IListDialogCallback {
-                            override fun onItemClicked(videoQuality: VideoQuality) {
-                                setVideoQualityDescription(videoQuality)
-                            }
-                        })
+                    callback = object : VideoDownloadQualityDialogFragment.IListDialogCallback {
+                        override fun onItemClicked(videoQuality: VideoQuality) {
+                            setVideoQualityDescription(videoQuality)
+                        }
+                    })
                 videoQualityDialog.show(childFragmentManager, VideoDownloadQualityDialogFragment.TAG)
 
                 trackEvent(
@@ -147,24 +150,24 @@ class AccountFragment : BaseFragment() {
     }
 
     private fun initHelpFields() {
-        if (!config?.feedbackEmailAddress.isNullOrBlank() || !config?.faqUrl.isNullOrBlank()) {
+        if (!config.feedbackEmailAddress.isNullOrBlank() || !config.faqUrl.isNullOrBlank()) {
             binding.tvHelp.visibility = View.VISIBLE
-            if (!config?.feedbackEmailAddress.isNullOrBlank()) {
+            if (!config.feedbackEmailAddress.isNullOrBlank()) {
                 binding.containerFeedback.visibility = View.VISIBLE
                 binding.btnEmailSupport.setOnClickListener {
-                    environment?.router?.showFeedbackScreen(requireActivity(), getString(R.string.email_subject))
+                    environment.router?.showFeedbackScreen(requireActivity(), getString(R.string.email_subject))
                     trackEvent(Analytics.Events.EMAIL_SUPPORT_CLICKED, Analytics.Values.EMAIL_SUPPORT_CLICKED)
                 }
             }
 
-            if (!config?.faqUrl.isNullOrBlank()) {
+            if (!config.faqUrl.isNullOrBlank()) {
                 binding.containerFaq.visibility = View.VISIBLE
                 binding.tvGetSupportDescription.text = ResourceUtil.getFormattedString(
                     resources, R.string.description_get_support,
-                    AppConstants.PLATFORM_NAME, config?.platformName
+                    AppConstants.PLATFORM_NAME, config.platformName
                 ).toString()
                 binding.btnFaq.setOnClickListener {
-                    BrowserUtil.open(requireActivity(), environment?.config?.faqUrl, false)
+                    BrowserUtil.open(requireActivity(), environment.config?.faqUrl, false)
                     trackEvent(Analytics.Events.FAQ_CLICKED, Analytics.Values.FAQ_CLICKED)
                 }
             }
@@ -172,8 +175,8 @@ class AccountFragment : BaseFragment() {
     }
 
     private fun sendGetUpdatedAccountCall() {
-        loginPrefs?.username?.let { username ->
-            getAccountCall = userService?.getAccount(username)
+        loginPrefs.username?.let { username ->
+            getAccountCall = userService.getAccount(username)
             getAccountCall?.enqueue(AccountDataUpdatedCallback(
                     requireContext(),
                     username,
@@ -183,11 +186,11 @@ class AccountFragment : BaseFragment() {
     }
 
     private fun initPersonalInfo() {
-        if (config?.isUserProfilesEnabled == false) {
+        if (!config.isUserProfilesEnabled) {
             binding.containerPersonalInfo.visibility = View.GONE
             return
         }
-        loginPrefs?.let { prefs ->
+        loginPrefs.let { prefs ->
             prefs.currentUserProfile?.let { profileModel ->
                 if (!profileModel.email.isNullOrEmpty()) {
                     binding.tvEmail.text = ResourceUtil.getFormattedString(resources, R.string.profile_email_description, AppConstants.EMAIL, profileModel.email)
@@ -205,15 +208,15 @@ class AccountFragment : BaseFragment() {
 
                 prefs.profileImage?.let { imageUrl ->
                     Glide.with(requireContext())
-                            .load(imageUrl.imageUrlMedium)
-                            .into(binding.profileImage)
+                        .load(imageUrl.imageUrlMedium)
+                        .into(binding.profileImage)
                 }
-                        ?: run { binding.profileImage.setImageResource(R.drawable.profile_photo_placeholder) }
+                    ?: run { binding.profileImage.setImageResource(R.drawable.profile_photo_placeholder) }
             }
             binding.containerPersonalInfo.visibility = View.VISIBLE
             binding.containerPersonalInfo.setOnClickListener {
                 trackEvent(Analytics.Events.PERSONAL_INFORMATION_CLICKED, Analytics.Values.PERSONAL_INFORMATION_CLICKED)
-                environment?.router?.showUserProfile(requireActivity(), prefs.username ?: "")
+                environment.router?.showUserProfile(requireActivity(), prefs.username ?: "")
             }
             setVideoQualityDescription(prefs.videoQuality)
         } ?: run { binding.containerPersonalInfo.visibility = View.GONE }
@@ -266,7 +269,7 @@ class AccountFragment : BaseFragment() {
 
     private fun updateSDCardSwitch() {
         val prefManager = PrefManager(requireContext(), PrefManager.Pref.USER_PREF)
-        if (environment?.config?.isDownloadToSDCardEnabled != true || Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        if (environment.config?.isDownloadToSDCardEnabled != true || Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             binding.containerSdCard.visibility = View.GONE
             binding.tvDescriptionSdCard.visibility = View.GONE
             prefManager.put(PrefManager.Key.DOWNLOAD_TO_SDCARD, false)
@@ -303,7 +306,7 @@ class AccountFragment : BaseFragment() {
 
     @SuppressWarnings("unused")
     fun onEventMainThread(@NonNull event: AccountDataLoadedEvent) {
-        if (environment?.config?.isUserProfilesEnabled == false) {
+        if (environment.config?.isUserProfilesEnabled == false) {
             return
         }
         initPersonalInfo()
@@ -315,6 +318,6 @@ class AccountFragment : BaseFragment() {
     }
 
     private fun trackEvent(eventName: String, biValue: String) {
-        environment?.analyticsRegistry?.trackEvent(eventName, biValue)
+        environment.analyticsRegistry?.trackEvent(eventName, biValue)
     }
 }

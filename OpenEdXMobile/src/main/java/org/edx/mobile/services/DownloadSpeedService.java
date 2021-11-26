@@ -1,13 +1,12 @@
 package org.edx.mobile.services;
 
+import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
-
-import com.google.inject.Inject;
 
 import org.edx.mobile.R;
 import org.edx.mobile.http.provider.OkHttpClientProvider;
@@ -23,17 +22,18 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import roboguice.service.RoboService;
 
 /**
  * Created by marcashman on 2014-12-01.
  */
-public class DownloadSpeedService extends RoboService {
+public class DownloadSpeedService extends Service {
 
     private static final String TAG = DownloadSpeedService.class.getCanonicalName();
     private static final long NS_PER_SEC = 1000000000;
@@ -53,10 +53,10 @@ public class DownloadSpeedService extends RoboService {
     private static final Logger logger = new Logger(DownloadSpeedService.class);
 
     @Inject
-    private OkHttpClientProvider okHttpClientProvider;
+    OkHttpClientProvider okHttpClientProvider;
 
     @Inject
-    private AnalyticsRegistry analyticsRegistry;
+    AnalyticsRegistry analyticsRegistry;
 
     SpeedTestHandler messageHandler;
 

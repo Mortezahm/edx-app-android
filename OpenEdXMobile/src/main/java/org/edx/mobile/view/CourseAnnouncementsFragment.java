@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import com.google.gson.reflect.TypeToken;
-import com.google.inject.Inject;
 
 import org.edx.mobile.R;
 import org.edx.mobile.base.BaseFragment;
@@ -33,9 +32,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import de.greenrobot.event.EventBus;
 import okhttp3.Request;
 
+@AndroidEntryPoint
 public class CourseAnnouncementsFragment extends BaseFragment implements RefreshListener {
     private final Logger logger = new Logger(getClass().getName());
 
@@ -48,7 +51,7 @@ public class CourseAnnouncementsFragment extends BaseFragment implements Refresh
     protected IEdxEnvironment environment;
 
     @Inject
-    private OkHttpClientProvider okHttpClientProvider;
+    OkHttpClientProvider okHttpClientProvider;
 
     private FullScreenErrorNotification errorNotification;
 
@@ -62,7 +65,7 @@ public class CourseAnnouncementsFragment extends BaseFragment implements Refresh
 
         webView = view.findViewById(R.id.webview);
         URLInterceptorWebViewClient client = new URLInterceptorWebViewClient(
-                getActivity(), webView, false, null);
+                getActivity(), environment.getConfig(), webView, false, null);
         // treat every link as external link in this view, so that all links will open in external browser
         client.setAllLinksAsExternal(true);
 

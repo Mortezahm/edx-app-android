@@ -9,25 +9,32 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
 import org.edx.mobile.logger.Logger;
 import org.edx.mobile.model.download.NativeDownloadModel;
 import org.edx.mobile.util.Sha1Util;
 
 import java.io.File;
 
-@Singleton
+import javax.inject.Inject;
+
+import dagger.Module;
+import dagger.hilt.InstallIn;
+import dagger.hilt.android.qualifiers.ApplicationContext;
+import dagger.hilt.components.SingletonComponent;
+
+@Module
+@InstallIn(SingletonComponent.class)
 public class IDownloadManagerImpl implements IDownloadManager {
 
-    private Context context;
+    private final Context context;
+
     @Inject
-    private DownloadManager dm;
+    DownloadManager dm;
+
     private final Logger logger = new Logger(getClass().getName());
 
     @Inject
-    public IDownloadManagerImpl(Context context) {
+    public IDownloadManagerImpl(@ApplicationContext Context context) {
         this.context = context;
     }
 

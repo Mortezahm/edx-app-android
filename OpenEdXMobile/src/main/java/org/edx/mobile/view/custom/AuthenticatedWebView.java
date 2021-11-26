@@ -40,15 +40,20 @@ import org.edx.mobile.http.notifications.FullScreenErrorNotification;
 import org.edx.mobile.interfaces.RefreshListener;
 import org.edx.mobile.logger.Logger;
 import org.edx.mobile.services.EdxCookieManager;
+import org.edx.mobile.util.Config;
 import org.edx.mobile.util.NetworkUtil;
 import org.edx.mobile.util.WebViewUtil;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import de.greenrobot.event.EventBus;
 
 /**
  * A custom webview which authenticates the user before loading a page,
  * Javascript can also be passed in arguments for evaluation.
  */
+@AndroidEntryPoint
 public class AuthenticatedWebView extends FrameLayout implements RefreshListener {
     protected final Logger logger = new Logger(getClass().getName());
 
@@ -61,6 +66,10 @@ public class AuthenticatedWebView extends FrameLayout implements RefreshListener
     private boolean isManuallyReloadable;
     private AuthenticatedWebviewBinding binding;
 
+    @Inject
+    Config config;
+
+    @Inject
     public AuthenticatedWebView(Context context) {
         super(context);
         init();
@@ -106,7 +115,7 @@ public class AuthenticatedWebView extends FrameLayout implements RefreshListener
                             URLInterceptorWebViewClient.CompletionCallback completionCallback, OverridePageUrlCallback pageUrlCallback) {
         this.isManuallyReloadable = isManuallyReloadable;
         binding.webview.getSettings().setJavaScriptEnabled(true);
-        webViewClient = new URLInterceptorWebViewClient(fragmentActivity, binding.webview, interceptAjaxRequest,
+        webViewClient = new URLInterceptorWebViewClient(fragmentActivity, config, binding.webview, interceptAjaxRequest,
                 completionCallback) {
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {

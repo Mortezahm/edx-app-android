@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.google.inject.Inject;
 
 import org.edx.mobile.http.HttpStatusException;
 
@@ -21,12 +20,6 @@ public class CallUtil {
     private CallUtil() {
         throw new UnsupportedOperationException();
     }
-
-    /**
-     * The Gson instance for converting the response body to the desired type.
-     */
-    @Inject
-    private static Gson gson;
 
     /**
      * Synchronously send the request and return its response body, converted to an object of the
@@ -77,7 +70,7 @@ public class CallUtil {
         if (!response.isSuccessful()) {
             throw new HttpStatusException(response);
         }
-        return gson.fromJson(response.body().string(), responseBodyClass);
+        return new Gson().fromJson(response.body().string(), responseBodyClass);
     }
 
     /**
@@ -104,6 +97,6 @@ public class CallUtil {
         if (!response.isSuccessful()) {
             throw new HttpStatusException(response);
         }
-        return gson.fromJson(response.body().string(), responseBodyTyoe.getType());
+        return new Gson().fromJson(response.body().string(), responseBodyTyoe.getType());
     }
 }

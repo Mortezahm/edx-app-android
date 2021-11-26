@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import com.google.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 import org.edx.mobile.R
 import org.edx.mobile.databinding.FragmentLockedCourseUnitBinding
 import org.edx.mobile.model.api.CourseUpgradeResponse
@@ -13,10 +13,13 @@ import org.edx.mobile.model.api.EnrolledCoursesResponse
 import org.edx.mobile.model.course.CourseComponent
 import org.edx.mobile.module.analytics.Analytics
 import org.edx.mobile.module.analytics.AnalyticsRegistry
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LockedCourseUnitFragment : CourseUnitFragment() {
+
     @Inject
-    var analyticsRegistry: AnalyticsRegistry? = null
+    lateinit var analyticsRegistry: AnalyticsRegistry
 
     companion object {
         @JvmStatic
@@ -42,10 +45,11 @@ class LockedCourseUnitFragment : CourseUnitFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val courseUpgradeData = arguments?.getParcelable(Router.EXTRA_COURSE_UPGRADE_DATA) as CourseUpgradeResponse
+        val courseUpgradeData =
+            arguments?.getParcelable<CourseUpgradeResponse>(Router.EXTRA_COURSE_UPGRADE_DATA) as CourseUpgradeResponse
         val courseData = arguments?.getSerializable(Router.EXTRA_COURSE_DATA) as EnrolledCoursesResponse
         loadPaymentBannerFragment(courseData, courseUpgradeData)
-        analyticsRegistry?.trackScreenView(Analytics.Screens.COURSE_UNIT_LOCKED)
+        analyticsRegistry.trackScreenView(Analytics.Screens.COURSE_UNIT_LOCKED)
     }
 
     private fun loadPaymentBannerFragment(courseData: EnrolledCoursesResponse,

@@ -9,9 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import dagger.hilt.android.AndroidEntryPoint
 import org.edx.mobile.BuildConfig.VERSION_NAME
 import org.edx.mobile.R
 import org.edx.mobile.base.BaseFragment
@@ -31,14 +32,15 @@ import org.edx.mobile.util.*
 import org.edx.mobile.view.adapters.CourseDatesAdapter
 import org.edx.mobile.view.dialog.AlertDialogFragment
 import org.edx.mobile.viewModel.CourseDateViewModel
-import org.edx.mobile.viewModel.ViewModelFactory
 
+@AndroidEntryPoint
 class CourseDatesPageFragment : OfflineSupportBaseFragment(), BaseFragment.PermissionListener {
 
     private lateinit var errorNotification: FullScreenErrorNotification
 
     private lateinit var binding: FragmentCourseDatesPageBinding
-    private lateinit var viewModel: CourseDateViewModel
+    private val viewModel: CourseDateViewModel by viewModels()
+
     private var onDateItemClick: OnDateBlockListener = object : OnDateBlockListener {
         override fun onClick(link: String, blockId: String) {
             val component = courseManager.getComponentByIdFromAppLevelCache(courseData.courseId, blockId)
@@ -97,7 +99,6 @@ class CourseDatesPageFragment : OfflineSupportBaseFragment(), BaseFragment.Permi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         permissionListener = this
-        viewModel = ViewModelProvider(this, ViewModelFactory()).get(CourseDateViewModel::class.java)
 
         courseData = arguments?.getSerializable(Router.EXTRA_COURSE_DATA) as EnrolledCoursesResponse
         isSelfPaced = courseData.course.isSelfPaced

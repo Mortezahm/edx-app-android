@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import dagger.hilt.android.AndroidEntryPoint
 import de.greenrobot.event.EventBus
 import okhttp3.MediaType
 import okhttp3.ResponseBody
@@ -41,6 +42,7 @@ import retrofit2.Response
 import java.util.*
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class MyCoursesListFragment : OfflineSupportBaseFragment(), RefreshListener {
     private lateinit var adapter: MyCoursesAdapter
     private lateinit var binding: FragmentMyCoursesListBinding
@@ -48,9 +50,11 @@ class MyCoursesListFragment : OfflineSupportBaseFragment(), RefreshListener {
     private var refreshOnResume = false
 
     @Inject
-    private lateinit var courseAPI: CourseAPI
+    lateinit var courseAPI: CourseAPI
+
     @Inject
-    private lateinit var loginAPI: LoginAPI
+    lateinit var loginAPI: LoginAPI
+
     private lateinit var errorNotification: FullScreenErrorNotification
     private lateinit var enrolledCoursesCall: Call<List<EnrolledCoursesResponse>>
 

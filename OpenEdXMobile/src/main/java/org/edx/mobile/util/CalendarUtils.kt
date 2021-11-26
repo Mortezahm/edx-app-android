@@ -67,12 +67,16 @@ object CalendarUtils {
             deleteCalendar(context = context, calendarId = calendarId)
         }
 
-        return createCalendar(
+        var newCalendarId = createCalendar(
             context = context,
             accountName = accountName,
             accountType = accountType,
             calendarTitle = calendarTitle
         )
+        if(newCalendarId!=null) {
+            return newCalendarId
+        }
+        return -1
     }
 
     /**
@@ -84,7 +88,7 @@ object CalendarUtils {
         accountName: String,
         accountType: String,
         calendarTitle: String
-    ): Long {
+    ): Long? {
         val contentValues = ContentValues()
         contentValues.put(CalendarContract.Calendars.NAME, calendarTitle)
         contentValues.put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, calendarTitle)
@@ -103,7 +107,7 @@ object CalendarUtils {
         creationUri?.let {
             val calendarData: Uri? = context.contentResolver.insert(creationUri, contentValues)
             calendarData?.let {
-                val id = calendarData.lastPathSegment.toLong()
+                val id = calendarData.lastPathSegment?.toLong()
                 logger.debug("Calendar ID $id")
                 return id
             }
@@ -122,20 +126,20 @@ object CalendarUtils {
                 CalendarContract.Calendars.ACCOUNT_NAME,
                 CalendarContract.Calendars.NAME)
         val calendarContentResolver = context.contentResolver
-        val cursor: Cursor = calendarContentResolver.query(
+        val cursor = calendarContentResolver.query(
                 CalendarContract.Calendars.CONTENT_URI, projection,
                 CalendarContract.Calendars.ACCOUNT_NAME + "=? and (" +
                         CalendarContract.Calendars.NAME + "=? or " +
                         CalendarContract.Calendars.CALENDAR_DISPLAY_NAME + "=?)", arrayOf(accountName, calendarTitle,
                 calendarTitle), null)
-        if (cursor.moveToFirst()) {
+        if (cursor?.moveToFirst() == true) {
             if (cursor.getString(cursor.getColumnIndex(CalendarContract.Calendars.NAME))
                     .equals(calendarTitle)
             ) {
                 calendarId = cursor.getInt(cursor.getColumnIndex(CalendarContract.Calendars._ID))
             }
         }
-        cursor.close()
+        cursor?.close()
         return calendarId.toLong()
     }
 
@@ -192,7 +196,9 @@ object CalendarUtils {
             put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().id)
         }
         val uri = context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, values)
-        addReminderToEvent(context = context, uri = uri)
+        if (uri != null) {
+            addReminderToEvent(context = context, uri = uri)
+        }
     }
 
     /**
@@ -231,7 +237,7 @@ object CalendarUtils {
      * @param uri Calendar event Uri
      */
     private fun addReminderToEvent(context: Context, uri: Uri) {
-        val eventId: Long = uri.lastPathSegment.toLong()
+        val eventId: Long? = uri.lastPathSegment?.toLong()
         logger.debug("Event ID $eventId")
         // Adding reminder on the start of event
         val eventValues = ContentValues().apply {

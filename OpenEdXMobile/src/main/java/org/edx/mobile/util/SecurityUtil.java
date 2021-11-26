@@ -3,6 +3,7 @@ package org.edx.mobile.util;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+
 import androidx.annotation.NonNull;
 
 import org.edx.mobile.logger.Logger;
@@ -13,8 +14,6 @@ import org.edx.mobile.services.CourseManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-
-import roboguice.RoboGuice;
 
 /**
  * Utility class dealing with the security of a user's personal information data.
@@ -68,7 +67,8 @@ public class SecurityUtil {
         PrefManager.nukeSharedPreferences(Collections.singletonList(PrefManager.Pref.APP_INFO));
 
         // Clear app level caching of all courses
-        final CourseManager courseManager = RoboGuice.getInjector(context).getInstance(CourseManager.class);
+
+        final CourseManager courseManager = new CourseManager();
         courseManager.clearAllAppLevelCache();
     }
 }

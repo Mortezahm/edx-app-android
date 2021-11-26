@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
@@ -22,9 +23,11 @@ import org.edx.mobile.repositorie.CourseDatesRepository
 import org.edx.mobile.util.CalendarUtils
 import retrofit2.Response
 import java.util.*
+import javax.inject.Inject
 
-class CourseDateViewModel(
-        private val repository: CourseDatesRepository = CourseDatesRepository.getInstance()
+@HiltViewModel
+class CourseDateViewModel @Inject constructor(
+    private val repository: CourseDatesRepository
 ) : ViewModel() {
 
     private val _syncLoader = MutableLiveData<Boolean>()

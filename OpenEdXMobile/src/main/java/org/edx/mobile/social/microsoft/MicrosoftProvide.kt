@@ -2,14 +2,15 @@ package org.edx.mobile.social.microsoft
 
 import android.content.Context
 import android.text.TextUtils
+import dagger.hilt.android.EntryPointAccessors
 import okhttp3.Request
+import org.edx.mobile.core.EdxDefaultModule
 import org.edx.mobile.http.callback.ErrorHandlingOkCallback
 import org.edx.mobile.http.provider.OkHttpClientProvider
 import org.edx.mobile.social.SocialFactory
 import org.edx.mobile.social.SocialLoginDelegate
 import org.edx.mobile.social.SocialMember
 import org.edx.mobile.social.SocialProvider
-import roboguice.RoboGuice
 
 class MicrosoftProvide : SocialProvider {
 
@@ -21,7 +22,9 @@ class MicrosoftProvide : SocialProvider {
                              accessToken: String?,
                              userInfoCallback: SocialLoginDelegate.SocialUserInfoCallback?) {
         context?.run {
-            val okHttpClientProvider = RoboGuice.getInjector(context).getInstance(OkHttpClientProvider::class.java)
+            val okHttpClientProvider: OkHttpClientProvider = EntryPointAccessors
+                .fromApplication(context, EdxDefaultModule.ProviderEntryPoint::class.java)
+                .getOkHttpClientProvider()
             okHttpClientProvider.get().newCall(Request.Builder()
                     .url(MS_GRAPH_URL)
                     .get()

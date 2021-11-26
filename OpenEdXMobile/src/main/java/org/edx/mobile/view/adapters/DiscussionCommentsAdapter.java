@@ -13,8 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.inject.Inject;
-
 import org.edx.mobile.R;
 import org.edx.mobile.discussion.DiscussionComment;
 import org.edx.mobile.discussion.DiscussionTextUtils;
@@ -27,15 +25,15 @@ import org.edx.mobile.view.view_holders.AuthorLayoutViewHolder;
 import java.util.ArrayList;
 import java.util.List;
 
-import roboguice.RoboGuice;
+import javax.inject.Inject;
 
 public class DiscussionCommentsAdapter extends RecyclerView.Adapter implements InfiniteScrollUtils.ListContentController<DiscussionComment> {
 
     @Inject
-    private Config config;
+    Config config;
 
     @Inject
-    private LoginPrefs loginPrefs;
+    LoginPrefs loginPrefs;
 
     @NonNull
     private final Context context;
@@ -74,7 +72,6 @@ public class DiscussionCommentsAdapter extends RecyclerView.Adapter implements I
         this.listener = listener;
         this.thread = thread;
         this.response = response;
-        RoboGuice.getInjector(context).injectMembers(this);
     }
 
     @Override

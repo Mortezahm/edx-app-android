@@ -1,10 +1,9 @@
 package org.edx.mobile.receivers;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-
-import com.google.inject.Inject;
 
 import org.edx.mobile.core.IEdxEnvironment;
 import org.edx.mobile.event.MediaStatusChangeEvent;
@@ -21,19 +20,22 @@ import org.edx.mobile.util.VideoUtil;
 import java.io.File;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import de.greenrobot.event.EventBus;
-import roboguice.receiver.RoboBroadcastReceiver;
 
 
 /**
  * BroadcastReceiver to receive the removable storage (such as SD-card) status events.
  */
 
-public class MediaStatusReceiver extends RoboBroadcastReceiver {
+public class MediaStatusReceiver extends BroadcastReceiver {
+
     @Inject
-    private IDatabase db;
+    IDatabase db;
+
     @Inject
-    private LoginPrefs loginPrefs;
+    LoginPrefs loginPrefs;
 
     private PrefManager prefManager;
 
@@ -44,7 +46,7 @@ public class MediaStatusReceiver extends RoboBroadcastReceiver {
     }
 
     @Override
-    public void handleReceive(Context context, Intent intent) {
+    public void onReceive(Context context, Intent intent) {
         prefManager = new PrefManager(context, PrefManager.Pref.USER_PREF);
         final String username = loginPrefs.getUsername();
         final String hashedUsername = (username != null) ? Sha1Util.SHA1(username) : null;

@@ -1,16 +1,18 @@
 package org.edx.mobile.social.facebook;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import com.facebook.AccessToken;
-import com.google.inject.Singleton;
 
 import org.edx.mobile.logger.Logger;
 import org.edx.mobile.social.SocialFactory;
 import org.edx.mobile.social.SocialLoginDelegate;
 import org.edx.mobile.social.SocialMember;
 import org.edx.mobile.social.SocialProvider;
+
+import javax.inject.Singleton;
 
 @Singleton
 public class FacebookProvider implements SocialProvider {

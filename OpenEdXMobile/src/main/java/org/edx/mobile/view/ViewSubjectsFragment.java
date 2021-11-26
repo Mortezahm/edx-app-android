@@ -2,10 +2,14 @@ package org.edx.mobile.view;
 
 import android.app.Activity;
 import android.content.Intent;
+
 import androidx.databinding.DataBindingUtil;
+
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
+
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,11 +35,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class ViewSubjectsFragment extends BaseFragment {
     private static final String KEY_SEARCH_QUERY = "query";
 
     @Inject
-    private AnalyticsRegistry analyticsRegistry;
+    AnalyticsRegistry analyticsRegistry;
+
     private FragmentViewSubjectsBinding binding;
     private SubjectsAdapter adapter;
     private String searchQuery;

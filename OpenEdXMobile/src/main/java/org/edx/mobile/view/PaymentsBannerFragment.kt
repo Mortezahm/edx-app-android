@@ -10,7 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import com.google.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_payments_banner.*
 import org.edx.mobile.R
 import org.edx.mobile.base.BaseFragment
@@ -19,10 +19,13 @@ import org.edx.mobile.databinding.FragmentPaymentsBannerBinding
 import org.edx.mobile.model.api.CourseUpgradeResponse
 import org.edx.mobile.model.api.EnrolledCoursesResponse
 import org.edx.mobile.model.course.CourseComponent
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class PaymentsBannerFragment : BaseFragment() {
+
     @Inject
-    var environment: IEdxEnvironment? = null
+    lateinit var environment: IEdxEnvironment
 
     companion object {
         private const val EXTRA_SHOW_INFO_BUTTON = "show_info_button"
@@ -78,7 +81,7 @@ class PaymentsBannerFragment : BaseFragment() {
 
     private fun populateCourseUpgradeBanner(context: Context) {
         val courseUpgradeData: CourseUpgradeResponse =
-                arguments?.getParcelable(Router.EXTRA_COURSE_UPGRADE_DATA) as CourseUpgradeResponse
+            arguments?.getParcelable<CourseUpgradeResponse>(Router.EXTRA_COURSE_UPGRADE_DATA) as CourseUpgradeResponse
         val courseData: EnrolledCoursesResponse =
                 arguments?.getSerializable(Router.EXTRA_COURSE_DATA) as EnrolledCoursesResponse
         val showInfoButton: Boolean = arguments?.getBoolean(EXTRA_SHOW_INFO_BUTTON) ?: false

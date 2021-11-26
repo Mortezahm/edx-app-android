@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import com.android.billingclient.api.Purchase
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.edx.mobile.R
 import org.edx.mobile.databinding.FragmentCourseUnitGradeBinding
@@ -19,6 +20,7 @@ import org.edx.mobile.model.course.CourseComponent
 import org.edx.mobile.util.BrowserUtil
 import org.edx.mobile.view.dialog.AlertDialogFragment
 
+@AndroidEntryPoint
 class CourseUnitMobileNotSupportedFragment : CourseUnitFragment() {
     private lateinit var binding: FragmentCourseUnitGradeBinding
     private var billingProcessor: BillingProcessor? = null

@@ -6,11 +6,10 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.View;
 
-import com.google.inject.Inject;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.edx.mobile.R;
 import org.edx.mobile.base.BaseFragmentActivity;
@@ -20,13 +19,18 @@ import org.edx.mobile.third_party.subscaleview.ImageSource;
 import org.edx.mobile.user.SaveUriToFileTask;
 import org.edx.mobile.view.custom.CropImageView;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class CropImageActivity extends BaseFragmentActivity {
     public static final String EXTRA_IMAGE_URI = "imageUri";
     public static final String EXTRA_CROP_RECT = "cropRect";
     public static final String EXTRA_FROM_CAMERA = "fromCamera";
 
     @Inject
-    private IEdxEnvironment environment;
+    IEdxEnvironment environment;
 
     public static Intent newIntent(@NonNull Context context, @NonNull Uri imageUri, boolean isFromCamera) {
         return new Intent(context, CropImageActivity.class)
@@ -57,7 +61,8 @@ public class CropImageActivity extends BaseFragmentActivity {
 
         task = new SaveUriToFileTask(this, (Uri) getIntent().getParcelableExtra(EXTRA_IMAGE_URI)) {
             @Override
-            protected void onSuccess(final Uri imageUri) throws Exception {
+            protected void onPostExecute(Uri imageUri) {
+                super.onPostExecute(imageUri);
                 final CropImageView imageView = (CropImageView) findViewById(R.id.image);
                 imageView.setImage(ImageSource.uri(imageUri));
 
@@ -77,7 +82,7 @@ public class CropImageActivity extends BaseFragmentActivity {
             }
 
             @Override
-            protected void onException(Exception e) throws RuntimeException {
+            public void onException(Exception e) throws RuntimeException {
                 throw new RuntimeException(e);
             }
         };

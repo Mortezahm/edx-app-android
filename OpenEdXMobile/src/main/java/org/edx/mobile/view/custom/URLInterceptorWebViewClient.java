@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
-import org.edx.mobile.base.MainApplication;
 import org.edx.mobile.http.HttpStatus;
 import org.edx.mobile.logger.Logger;
 import org.edx.mobile.model.AjaxCallData;
@@ -32,7 +31,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 
-import roboguice.RoboGuice;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ActivityContext;
 
 /**
  * Created by rohan on 2/2/15.
@@ -45,6 +47,7 @@ import roboguice.RoboGuice;
  * This implementation detects host of the first URL being loaded. Further, if any URL intercepted has a different host
  * than the current one, then treats it as an external link and may open in external browser.
  */
+@Singleton
 public class URLInterceptorWebViewClient extends WebViewClient {
 
     private final Logger logger = new Logger(URLInterceptorWebViewClient.class);
@@ -55,6 +58,7 @@ public class URLInterceptorWebViewClient extends WebViewClient {
     private IPageStatusListener pageStatusListener;
     private String hostForThisPage = null;
     private boolean ajaxInterceptorEmbed = false;
+    Config config;
 
     /**
      * Tells if the page loading has been finished or not.
@@ -65,7 +69,6 @@ public class URLInterceptorWebViewClient extends WebViewClient {
      */
     private boolean loadingInitialUrl = true;
 
-    private final Config config;
     /*
     To help a few views (like Announcements) to treat every link as external link and open in
     external web browser.
@@ -79,11 +82,13 @@ public class URLInterceptorWebViewClient extends WebViewClient {
 
     private ValueCallback<Uri[]> filePathCallback;
 
-    public URLInterceptorWebViewClient(FragmentActivity activity, WebView webView,
-                                       boolean interceptAjaxRequest, CompletionCallback completionCallback) {
+    @Inject
+    public URLInterceptorWebViewClient(@ActivityContext FragmentActivity activity, Config config,
+                                       WebView webView, boolean interceptAjaxRequest,
+                                       CompletionCallback completionCallback) {
         this.activity = activity;
+        this.config = config;
         this.interceptAjaxRequest = interceptAjaxRequest;
-        config = RoboGuice.getInjector(MainApplication.instance()).getInstance(Config.class);
         this.completionCallback = completionCallback;
         setupWebView(webView);
     }
