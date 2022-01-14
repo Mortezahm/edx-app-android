@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import dagger.hilt.android.AndroidEntryPoint
 import de.greenrobot.event.EventBus
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody
 import org.edx.mobile.R
 import org.edx.mobile.authentication.LoginAPI
@@ -176,12 +177,12 @@ class MyCoursesListFragment : OfflineSupportBaseFragment(), RefreshListener {
                         response.code() == HttpStatus.UPGRADE_REQUIRED -> {
                             context?.let { context ->
                                 errorNotification.showError(context, HttpStatusException(Response.error<Any>(response.code(),
-                                        ResponseBody.create(MediaType.parse("text/plain"), ""))), 0, null)
+                                        ResponseBody.create("text/plain".toMediaTypeOrNull(), ""))), 0, null)
                             }
                         }
                         adapter.isEmpty -> {
                             showError(HttpStatusException(Response.error<Any>(response.code(),
-                                    ResponseBody.create(MediaType.parse("text/plain"), response.message()))))
+                                    ResponseBody.create("text/plain".toMediaTypeOrNull(), response.message()))))
                         }
                     }
                     invalidateView()

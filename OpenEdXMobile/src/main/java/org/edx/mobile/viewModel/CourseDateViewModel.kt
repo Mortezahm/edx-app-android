@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody
 import org.edx.mobile.exception.ErrorMessage
 import org.edx.mobile.http.HttpStatusException
@@ -187,6 +188,6 @@ class CourseDateViewModel @Inject constructor(
 
     fun setError(errorCode: Int, httpStatusCode: Int, msg: String) {
         _errorMessage.value = ErrorMessage(errorCode, HttpStatusException(Response.error<Any>(httpStatusCode,
-                ResponseBody.create(MediaType.parse("text/plain"), msg))))
+                ResponseBody.create("text/plain".toMediaTypeOrNull(), msg))))
     }
 }
